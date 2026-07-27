@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<title>Je t'aime</title>
+<link rel="icon" href="assets/heart.png">
+
+<style>
+
+#secretBackground {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url("assets/secretbackground.png");
+
+    background-size: cover;
+    background-position: center;
+
+    z-index: -1;
+
+}
+
+#soundButton {
+    position: absolute;
+
+    left: 1804px;
+    top: 911px;
+
+    width: 35px;
+    height: 35px;
+
+    cursor: pointer;
+    z-index: 5;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: Arial, sans-serif;
+}
+
+#page {
+    width: 1920px;
+    height: 1080px;
+    position: absolute;
+    transform-origin: top left;
+}
+
+
+/* IMAGE PRINCIPALE */
+
+#background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    z-index: 3;
+}
+
+
+#videoFrame {
+
+    position: absolute;
+
+    left: 13px;
+    top: 620px;
+
+    width: 560px;
+    height: 430px;
+
+    overflow: hidden;
+
+    z-index: 2;
+
+}
+
+
+#planeVideo {
+
+    width: 90%;
+    height: 90%;
+
+    object-fit: cover;
+
+    transform: scale(1.3) translate(20px, 10px);
+
+}
+
+/* ECRAN XP */
+
+#loading {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: linear-gradient(#0b3d91, #001b45);
+
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    opacity: 1;
+    transition: opacity 1.5s ease;
+}
+
+
+/* LOGO */
+
+#logo {
+    width: 700px;
+    margin-bottom: 80px;
+}
+
+
+/* TEXTE */
+
+#loading p {
+    font-size: 32px;
+}
+
+
+/* BOUTON */
+
+#startButton {
+
+    width: 200px;
+
+    cursor: pointer;
+
+    margin-top: 40px;
+
+    user-select: none;
+
+}
+
+button:hover {
+    background: white;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="secretBackground"></div>
+
+
+<div id="loading">
+
+<img id="logo" src="assets/logo chargement.png">
+
+<img id="loadingbar" src="assets/loading bar.gif">
+
+<p>Chargement...</p>
+
+<img 
+    id="startButton" 
+    src="assets/startbutton.png"
+    onclick="startPage()"
+>
+
+</div>
+
+
+<div id="page">
+
+
+<img id="background" src="assets/comi plane.png">
+
+<div id="videoFrame">
+
+    <video id="planeVideo" autoplay loop muted>
+        <source src="assets/plane showcase.mp4" type="video/mp4">
+    </video>
+
+</div>
+
+<img id="soundButton" src="assets/sound.png">
+
+<audio id="mouseSound" src="assets/mouse.mp3"></audio>
+
+<audio id="startupSound" src="assets/startup.mp3"></audio>
+
+<audio id="music" src="assets/music.mp3" loop></audio>
+
+</div>
+
+<script>
+
+function startPage() {
+
+let button = document.getElementById("startButton");
+
+button.src = "assets/startbuttonHOLD.png";
+
+setTimeout(() => {
+
+    button.src = "assets/startbutton.png";
+
+}, 150);
+
+    let mouse = document.getElementById("mouseSound");
+    let startup = document.getElementById("startupSound");
+    let music = document.getElementById("music");
+
+    let loading = document.getElementById("loading");
+
+
+    // volume bas
+    mouse.volume = 0.25;
+    startup.volume = 0.25;
+    music.volume = 0;
+
+
+    // clic XP
+mouse.play();
+
+setTimeout(() => {
+    startup.play();
+}, 300);
+
+
+    // lancer la musique après le startup
+    startup.onended = () => {
+
+        music.play();
+
+        // fade in musique
+        let volume = 0;
+
+        let fade = setInterval(() => {
+
+            if (volume < 0.25) {
+
+                volume += 0.01;
+                music.volume = volume;
+
+            } else {
+
+                clearInterval(fade);
+
+            }
+
+        }, 100);
+
+    };
+
+
+    // fondu écran
+    loading.style.opacity = "0";
+
+
+    setTimeout(() => {
+
+        loading.style.display = "none";
+
+    }, 1500);
+
+}
+
+document.addEventListener("click", function() {
+
+    let click = document.getElementById("mouseSound");
+
+    click.currentTime = 0;
+    click.volume = 0.25;
+    click.play();
+
+});
+
+let muted = false;
+
+document.getElementById("soundButton").addEventListener("click", function(event) {
+
+    event.stopPropagation();
+
+    let music = document.getElementById("music");
+    let button = document.getElementById("soundButton");
+
+    muted = !muted;
+
+    music.muted = muted;
+
+
+    if (muted) {
+
+        button.src = "assets/soundOFF.png";
+
+    } else {
+
+        button.src = "assets/sound.png";
+
+    }
+
+});
+
+// REDIMENSIONNEMENT AUTO
+
+function resizePage(){
+
+    let page = document.getElementById("page");
+
+    let scale = Math.min(
+        window.innerWidth / 1920,
+        window.innerHeight / 1080
+    );
+
+    page.style.transform = "scale(" + scale + ")";
+
+    page.style.left =
+    (window.innerWidth - 1920 * scale) / 2 + "px";
+
+    page.style.top =
+    (window.innerHeight - 1080 * scale) / 2 + "px";
+
+}
+
+
+window.addEventListener("resize", resizePage);
+
+resizePage();
+
+</script>
+
+</body>
+
+</html>
